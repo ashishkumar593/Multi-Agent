@@ -83,23 +83,20 @@ if start_btn and topic.strip():
         progress_bar = st.progress(0)
         status_text = st.empty()
 
-        async def run_direct_workflow():
-            from backend.api.app import workflow
+        from backend.api.app import workflow
 
-            def callback(agent_name: str, msg: str):
-                step_weights = {"planner": 20, "search": 45, "analyst": 65, "writer": 85, "critic": 95, "complete": 100}
-                progress_bar.progress(step_weights.get(agent_name, 50))
-                status_text.markdown(f"**Agent [{agent_name.upper()}]**: {msg}")
+        def callback(agent_name: str, msg: str):
+            step_weights = {"planner": 20, "search": 45, "analyst": 65, "writer": 85, "critic": 95, "complete": 100}
+            progress_bar.progress(step_weights.get(agent_name, 50))
+            status_text.markdown(f"**Agent [{agent_name.upper()}]**: {msg}")
 
-            return await workflow.run(
+        with st.spinner("Multi-agent team active..."):
+            state = workflow.run_sync(
                 topic=topic,
                 scope=scope.lower(),
                 max_iterations=max_iters,
                 progress_callback=callback,
             )
-
-        with st.spinner("Multi-agent team active..."):
-            state = asyncio.run(run_direct_workflow())
 
     progress_bar.progress(100)
     status_text.success("✅ Research & citation validation completed successfully!")
