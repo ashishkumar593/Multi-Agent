@@ -4,13 +4,14 @@ from typing import Any
 from backend.db.repositories.research_repo import ResearchRepository
 from backend.graph.workflow import ResearchWorkflow
 from backend.rag.retriever import HybridRetriever
+from backend.rag.store import VectorStore
 
 class ResearchService:
     """Manages the lifecycle of research queries and persistent state."""
 
-    def __init__(self, retriever: HybridRetriever, repository: ResearchRepository | None = None):
-        self.retriever = retriever
-        self.workflow = ResearchWorkflow(retriever=retriever)
+    def __init__(self, retriever: HybridRetriever | None = None, repository: ResearchRepository | None = None):
+        self.retriever = retriever or HybridRetriever(vector_store=VectorStore())
+        self.workflow = ResearchWorkflow(retriever=self.retriever)
         self.repository = repository or ResearchRepository()
 
     def execute_research_sync(
@@ -44,6 +45,7 @@ class ResearchService:
             "report_markdown": markdown,
             "comparison_table": draft.comparison_table_markdown if draft else "",
             "references_markdown": draft.references_markdown if draft else "",
+            "evidence": state.get("evidence", []),
             "evidence_count": len(state.get("evidence", [])),
             "quality_score": score,
         }

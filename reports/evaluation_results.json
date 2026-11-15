@@ -1,0 +1,52 @@
+{
+  "total_queries_evaluated": 2,
+  "total_time_seconds": 0.0,
+  "average_latency_seconds": 0.0,
+  "average_quality_score": 9.5,
+  "average_citation_precision": 1.0,
+  "average_citation_recall": 1.0,
+  "results": [
+    {
+      "question_id": "Q001",
+      "topic": "Impact of Generative AI on software engineering developer productivity between 2023 and 2026",
+      "difficulty": "medium",
+      "domain": "ai_ml",
+      "duration_sec": 0.0,
+      "scores": {
+        "citation_precision": 1.0,
+        "citation_recall": 1.0,
+        "faithfulness": 1.0,
+        "hallucination_rate": 0.0,
+        "structure_completeness": 1.0,
+        "overall_quality_score": 9.5,
+        "details": {
+          "evidence_count": 2,
+          "claims_count": 2,
+          "sections_found": 3,
+          "critic_approved": true
+        }
+      }
+    },
+    {
+      "question_id": "Q002",
+      "topic": "Differences between Bi-Encoder dense retrieval and Cross-Encoder reranking in modern RAG architectures",
+      "difficulty": "easy",
+      "domain": "ai_ml",
+      "duration_sec": 0.0,
+      "scores": {
+        "citation_precision": 1.0,
+        "citation_recall": 1.0,
+        "faithfulness": 1.0,
+        "hallucination_rate": 0.0,
+        "structure_completeness": 1.0,
+        "overall_quality_score": 9.5,
+        "details": {
+          "evidence_count": 2,
+          "claims_count": 2,
+          "sections_found": 3,
+          "critic_approved": true
+        }
+      }
+    }
+  ]
+}
