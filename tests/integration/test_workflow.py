@@ -1,9 +1,9 @@
 """End-to-end multi-agent research workflow test."""
 import pytest
-from src.backend.graph.workflow import ResearchWorkflow
-from src.backend.rag.loaders import DocumentChunk
-from src.backend.rag.retriever import HybridRetriever
-from src.backend.rag.store import VectorStore
+from backend.graph.workflow import ResearchWorkflow
+from backend.rag.loaders import DocumentChunk
+from backend.rag.retriever import HybridRetriever
+from backend.rag.store import VectorStore
 
 def test_full_research_workflow():
     vector_store = VectorStore()

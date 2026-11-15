@@ -1,6 +1,6 @@
 """Unit tests for Analyst Agent."""
-from src.backend.agents.analyst import AnalystAgent
-from src.backend.agents.state import EvidenceItem, ResearchPlan
+from backend.agents.analyst import AnalystAgent
+from backend.agents.state import EvidenceItem, ResearchPlan
 
 def test_analyst_claim_extraction():
     analyst = AnalystAgent()

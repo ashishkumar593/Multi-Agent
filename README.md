@@ -65,13 +65,13 @@ py -3.13 -m pytest -v
 
 ### 2. Launch FastAPI Backend
 ```bash
-py -3.13 src/backend/main.py
+py -3.13 backend/main.py
 # Or with uvicorn:
-uvicorn src.backend.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 ### 3. Launch Streamlit UI
 ```bash
-streamlit run src/frontend/app.py
+streamlit run frontend/app.py
 ```
 Open `http://localhost:8501` in your browser.

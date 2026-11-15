@@ -1,5 +1,5 @@
 """Unit tests for Planner Agent."""
-from src.backend.agents.planner import PlannerAgent
+from backend.agents.planner import PlannerAgent
 
 def test_planner_subquestions():
     planner = PlannerAgent()

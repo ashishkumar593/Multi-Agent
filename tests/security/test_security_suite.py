@@ -1,8 +1,8 @@
 """Adversarial security test suite."""
 from pathlib import Path
 import pytest
-from src.backend.core.exceptions import SecurityError
-from src.backend.core.security import validate_safe_path, validate_safe_url
+from backend.core.exceptions import SecurityError
+from backend.core.security import validate_safe_path, validate_safe_url
 
 def test_security_suite_ssrf_localhost():
     with pytest.raises(SecurityError, match="SSRF blocked"):

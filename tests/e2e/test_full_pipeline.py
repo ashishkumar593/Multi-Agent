@@ -1,6 +1,6 @@
 """End-to-end full pipeline smoke test."""
-from src.backend.api.app import research_service
-from src.backend.rag.loaders import DocumentChunk
+from backend.api.app import research_service
+from backend.rag.loaders import DocumentChunk
 
 def test_e2e_research_service():
     research_service.retriever.index_documents([

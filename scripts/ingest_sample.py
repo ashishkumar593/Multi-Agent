@@ -6,8 +6,8 @@ from pathlib import Path
 # Add project root to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from src.backend.api.app import retriever
-from src.backend.rag.ingest import DocumentIngestionPipeline
+from backend.api.app import retriever
+from backend.rag.ingest import DocumentIngestionPipeline
 
 def main():
     parser = argparse.ArgumentParser(description="Document Ingestion CLI")

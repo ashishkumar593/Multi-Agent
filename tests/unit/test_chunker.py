@@ -1,6 +1,6 @@
 """Tests for recursive chunker."""
-from src.backend.rag.chunker import RecursiveChunker
-from src.backend.rag.loaders import DocumentChunk
+from backend.rag.chunker import RecursiveChunker
+from backend.rag.loaders import DocumentChunk
 
 def test_chunker_splitting():
     chunker = RecursiveChunker(target_chunk_tokens=50, overlap_tokens=10)

@@ -1,8 +1,8 @@
 """Integration tests for hybrid retrieval and RRF scoring."""
-from src.backend.rag.bm25 import BM25Retriever
-from src.backend.rag.loaders import DocumentChunk
-from src.backend.rag.retriever import HybridRetriever
-from src.backend.rag.store import VectorStore
+from backend.rag.bm25 import BM25Retriever
+from backend.rag.loaders import DocumentChunk
+from backend.rag.retriever import HybridRetriever
+from backend.rag.store import VectorStore
 
 def test_hybrid_retriever_ranking():
     store = VectorStore()

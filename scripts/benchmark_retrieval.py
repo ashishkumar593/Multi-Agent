@@ -6,10 +6,10 @@ from pathlib import Path
 # Add project root to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from src.backend.rag.bm25 import BM25Retriever
-from src.backend.rag.loaders import DocumentChunk
-from src.backend.rag.retriever import HybridRetriever
-from src.backend.rag.store import VectorStore
+from backend.rag.bm25 import BM25Retriever
+from backend.rag.loaders import DocumentChunk
+from backend.rag.retriever import HybridRetriever
+from backend.rag.store import VectorStore
 
 def main():
     print("\n--- Running Retrieval Engine Benchmark ---")

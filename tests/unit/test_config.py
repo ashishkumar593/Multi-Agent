@@ -1,5 +1,5 @@
 """Tests for configuration settings."""
-from src.backend.core.config import Settings
+from backend.core.config import Settings
 
 def test_default_settings():
     settings = Settings()

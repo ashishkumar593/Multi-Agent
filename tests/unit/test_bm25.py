@@ -1,6 +1,6 @@
 """Tests for BM25 lexical retrieval."""
-from src.backend.rag.bm25 import BM25Retriever
-from src.backend.rag.loaders import DocumentChunk
+from backend.rag.bm25 import BM25Retriever
+from backend.rag.loaders import DocumentChunk
 
 def test_bm25_retrieval():
     chunks = [

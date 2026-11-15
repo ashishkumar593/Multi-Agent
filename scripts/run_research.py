@@ -6,7 +6,7 @@ from pathlib import Path
 # Add project root to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from src.backend.api.app import workflow
+from backend.api.app import workflow
 
 def main():
     parser = argparse.ArgumentParser(description="Autonomous Multi-Agent Research CLI")

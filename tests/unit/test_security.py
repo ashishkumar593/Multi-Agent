@@ -1,8 +1,8 @@
 """Tests for security guardrails (SSRF and path traversal)."""
 from pathlib import Path
 import pytest
-from src.backend.core.exceptions import SecurityError
-from src.backend.core.security import validate_safe_path, validate_safe_url
+from backend.core.exceptions import SecurityError
+from backend.core.security import validate_safe_path, validate_safe_url
 
 def test_ssrf_blocking_localhost():
     with pytest.raises(SecurityError, match="SSRF blocked"):

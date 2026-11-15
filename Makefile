@@ -24,10 +24,10 @@ format:
 	ruff format .
 
 run-api:
-	python src/backend/main.py
+	python backend/main.py
 
 run-ui:
-	streamlit run src/frontend/app.py
+	streamlit run frontend/app.py
 
 docker-up:
 	docker compose up --build -d

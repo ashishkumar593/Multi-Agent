@@ -50,7 +50,7 @@
 ## Production Quality Checklist (17 / 29 Verified)
 
 ### Architecture & Code Quality
-- [x] Modular architecture established (`src/backend`, `src/frontend`)
+- [x] Modular architecture established (`backend`, `frontend`)
 - [x] Strict Python type hints and compliance
 - [x] Centralized Pydantic v2 settings management
 - [x] Structured logging with request tracing

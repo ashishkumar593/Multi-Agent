@@ -1,5 +1,5 @@
 """Tests for citation registry and validation."""
-from src.backend.rag.citations import CitationRegistry
+from backend.rag.citations import CitationRegistry
 
 def test_citation_registration_and_validation():
     registry = CitationRegistry()

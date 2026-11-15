@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl gcc python
 COPY pyproject.toml .
 RUN pip install --no-cache-dir .
 
-COPY src/ ./src/
+COPY backend/ ./backend/
 COPY data/ ./data/
 
-CMD ["celery", "-A", "src.backend.workers.queue.celery_app", "worker", "--loglevel=info"]
+CMD ["celery", "-A", "backend.workers.queue.celery_app", "worker", "--loglevel=info"]

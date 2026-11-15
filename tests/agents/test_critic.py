@@ -1,6 +1,6 @@
 """Unit tests for Critic Agent."""
-from src.backend.agents.critic import CriticAgent
-from src.backend.agents.state import EvidenceItem, ReportDraft
+from backend.agents.critic import CriticAgent
+from backend.agents.state import EvidenceItem, ReportDraft
 
 def test_critic_flags_invalid_citation():
     critic = CriticAgent()
