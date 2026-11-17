@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 import os
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 from backend.db.company_database import CompanySession as Session
@@ -219,14 +219,14 @@ class CompanyToolRegistry:
         if team and current_count >= team.max_headcount:
             return {"status": "rejected", "reason": f"Team '{team_id}' reached max headcount ({team.max_headcount})."}
 
-        new_id = f"agent_{role}_{int(datetime.utcnow().timestamp()) % 10000}"
+        new_id = f"agent_{role}_{int(datetime.now(timezone.utc).timestamp()) % 10000}"
         new_agent = AgentModel(
             id=new_id,
             role=role,
             team_id=team_id,
             status="alive",
             score=100.0,
-            last_heartbeat=datetime.utcnow(),
+            last_heartbeat=datetime.now(timezone.utc),
         )
         self.db.add(new_agent)
         self.db.add(
@@ -252,6 +252,13 @@ class CompanyToolRegistry:
     # -------------------------------------------------------------
     # 5. Human Liaison Tools (Blockers & Escalations)
     # -------------------------------------------------------------
+    def send_telegram(self, message: str, agent_id: str) -> dict[str, Any]:
+        """Liaison sends an update or alert directly to the human owner's Telegram."""
+        self._verify_permission(agent_id, "send_telegram")
+        from backend.company.notifications import TelegramNotificationService
+        service = TelegramNotificationService()
+        return service.send_notification(message)
+
     def post_blocker(
         self,
         task_id: str,
@@ -280,7 +287,19 @@ class CompanyToolRegistry:
             task.status = "blocked"
 
         self.db.commit()
-        return {"status": "posted", "blocker_id": blocker.id, "task_id": task_id}
+
+        # Send instant notification to human owner via Telegram or audit log
+        from backend.company.notifications import TelegramNotificationService
+        notifier = TelegramNotificationService()
+        notif_text = notifier.format_blocker_message(blocker, task)
+        notif_res = notifier.send_notification(notif_text)
+
+        return {
+            "status": "posted",
+            "blocker_id": blocker.id,
+            "task_id": task_id,
+            "notification": notif_res.get("status"),
+        }
 
     # -------------------------------------------------------------
     # 6. Quality Reviewer Tools (Independent Scoring)
