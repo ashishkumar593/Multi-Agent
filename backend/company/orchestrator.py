@@ -38,8 +38,13 @@ class CompanyOrchestrator:
     # -------------------------------------------------------------
     # 1. Project Initialization by CEO & Manager
     # -------------------------------------------------------------
-    def start_project(self, goal: str, project_name: str = "VerdeBrew Landing Page") -> ProjectModel:
-        """CEO initiates the project and Manager creates 5 to 10 dependent tasks."""
+    def start_project(
+        self,
+        goal: str,
+        project_name: str = "VerdeBrew Landing Page",
+        business_type: str = "website",
+    ) -> ProjectModel:
+        """CEO initiates the project and Manager creates 5 to 10 dependent tasks based on business model."""
         proj_id = f"proj_{int(datetime.now(timezone.utc).timestamp())}"
         project = ProjectModel(
             id=proj_id,
@@ -52,44 +57,121 @@ class CompanyOrchestrator:
         self.db.add(project)
         self.db.commit()
 
-        # Manager creates the 5-task standard landing page project workflow
-        tasks_spec = [
-            {
-                "id": f"{proj_id}_t1",
-                "team_id": "team_mktg",
-                "title": "Market & Competitor Research",
-                "spec": "Analyze eco-friendly coffee brands and extract key value propositions.",
-                "depends_on": [],
-            },
-            {
-                "id": f"{proj_id}_t2",
-                "team_id": "team_mktg",
-                "title": "Landing Page Copywriting & Hero Messaging",
-                "spec": "Draft high-converting headlines, feature bullets, and Call-To-Action (CTA).",
-                "depends_on": [f"{proj_id}_t1"],
-            },
-            {
-                "id": f"{proj_id}_t3",
-                "team_id": "team_eng",
-                "title": "HTML5 Semantic Structure & Layout",
-                "spec": "Build responsive index.html in the sandbox including hero, features, and CTA button.",
-                "depends_on": [f"{proj_id}_t2"],
-            },
-            {
-                "id": f"{proj_id}_t4",
-                "team_id": "team_eng",
-                "title": "CSS Modern Styling & Design System",
-                "spec": "Style the landing page with modern emerald palette and clean typography.",
-                "depends_on": [f"{proj_id}_t3"],
-            },
-            {
-                "id": f"{proj_id}_t5",
-                "team_id": "team_ops",
-                "title": "Human Approval for Public Deployment",
-                "spec": "Gate release behind human owner approval via Human Liaison.",
-                "depends_on": [f"{proj_id}_t4"],
-            },
-        ]
+        if business_type == "lead_research" or "lead" in goal.lower():
+            tasks_spec = [
+                {
+                    "id": f"{proj_id}_t1",
+                    "team_id": "team_mktg",
+                    "title": "Define ICP & Lead Sourcing Criteria",
+                    "spec": "Formulate Ideal Customer Profile (ICP), industry filters, and headcount bounds.",
+                    "depends_on": [],
+                },
+                {
+                    "id": f"{proj_id}_t2",
+                    "team_id": "team_mktg",
+                    "title": "Company Discovery & Market Prospecting",
+                    "spec": "Gather verified target companies matching ICP criteria.",
+                    "depends_on": [f"{proj_id}_t1"],
+                },
+                {
+                    "id": f"{proj_id}_t3",
+                    "team_id": "team_mktg",
+                    "title": "Decision Maker & Contact Context Enrichment",
+                    "spec": "Extract key stakeholder roles and value alignment context.",
+                    "depends_on": [f"{proj_id}_t2"],
+                },
+                {
+                    "id": f"{proj_id}_t4",
+                    "team_id": "team_eng",
+                    "title": "CSV Dataset Generation & Export",
+                    "spec": "Generate structured leads.csv in the sandbox with verified records.",
+                    "depends_on": [f"{proj_id}_t3"],
+                },
+                {
+                    "id": f"{proj_id}_t5",
+                    "team_id": "team_ops",
+                    "title": "Human Approval for Client Delivery",
+                    "spec": "Gate release behind human owner sign-off via Human Liaison.",
+                    "depends_on": [f"{proj_id}_t4"],
+                },
+            ]
+        elif business_type == "seo_content" or "seo" in goal.lower() or "article" in goal.lower():
+            tasks_spec = [
+                {
+                    "id": f"{proj_id}_t1",
+                    "team_id": "team_mktg",
+                    "title": "Keyword Research & Search Intent Mapping",
+                    "spec": "Extract high-intent search keywords and competitor content gaps.",
+                    "depends_on": [],
+                },
+                {
+                    "id": f"{proj_id}_t2",
+                    "team_id": "team_mktg",
+                    "title": "Article Outline & Content Architecture",
+                    "spec": "Draft comprehensive H2/H3 semantic outline and key takeaways.",
+                    "depends_on": [f"{proj_id}_t1"],
+                },
+                {
+                    "id": f"{proj_id}_t3",
+                    "team_id": "team_mktg",
+                    "title": "Draft Publication-Ready SEO Article",
+                    "spec": "Write complete Markdown article.md with engaging prose and headers.",
+                    "depends_on": [f"{proj_id}_t2"],
+                },
+                {
+                    "id": f"{proj_id}_t4",
+                    "team_id": "team_eng",
+                    "title": "Technical SEO & Readability Validation",
+                    "spec": "Validate markdown structure, keyword density, and schema metadata.",
+                    "depends_on": [f"{proj_id}_t3"],
+                },
+                {
+                    "id": f"{proj_id}_t5",
+                    "team_id": "team_ops",
+                    "title": "Human Approval for Live Publishing",
+                    "spec": "Gate release behind human owner sign-off via Human Liaison.",
+                    "depends_on": [f"{proj_id}_t4"],
+                },
+            ]
+        else:
+            # Default: Website / Landing page agency
+            tasks_spec = [
+                {
+                    "id": f"{proj_id}_t1",
+                    "team_id": "team_mktg",
+                    "title": "Market & Competitor Research",
+                    "spec": "Analyze eco-friendly coffee brands and extract key value propositions.",
+                    "depends_on": [],
+                },
+                {
+                    "id": f"{proj_id}_t2",
+                    "team_id": "team_mktg",
+                    "title": "Landing Page Copywriting & Hero Messaging",
+                    "spec": "Draft high-converting headlines, feature bullets, and Call-To-Action (CTA).",
+                    "depends_on": [f"{proj_id}_t1"],
+                },
+                {
+                    "id": f"{proj_id}_t3",
+                    "team_id": "team_eng",
+                    "title": "HTML5 Semantic Structure & Layout",
+                    "spec": "Build responsive index.html in the sandbox including hero, features, and CTA button.",
+                    "depends_on": [f"{proj_id}_t2"],
+                },
+                {
+                    "id": f"{proj_id}_t4",
+                    "team_id": "team_eng",
+                    "title": "CSS Modern Styling & Design System",
+                    "spec": "Style the landing page with modern emerald palette and clean typography.",
+                    "depends_on": [f"{proj_id}_t3"],
+                },
+                {
+                    "id": f"{proj_id}_t5",
+                    "team_id": "team_ops",
+                    "title": "Human Approval for Public Deployment",
+                    "spec": "Gate release behind human owner approval via Human Liaison.",
+                    "depends_on": [f"{proj_id}_t4"],
+                },
+            ]
 
         for t in tasks_spec:
             task = TaskModel(

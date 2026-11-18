@@ -309,11 +309,14 @@ class CompanyToolRegistry:
         self._verify_permission(agent_id, "run_tests")
         html_files = list(SANDBOX_DIR.glob("*.html"))
         css_files = list(SANDBOX_DIR.glob("*.css"))
+        csv_files = list(SANDBOX_DIR.glob("*.csv"))
+        md_files = [f for f in SANDBOX_DIR.glob("*.md") if f.name != "README.md"]
 
         issues = []
         checks_passed = 0
+        total_checks = 4
 
-        # Objective test checks for landing page
+        # 1. HTML / CSS Website Deliverable Tests
         if html_files:
             html_text = html_files[0].read_text(encoding="utf-8")
             if "<!DOCTYPE html>" in html_text or "<html" in html_text:
@@ -330,14 +333,43 @@ class CompanyToolRegistry:
                 checks_passed += 1
             else:
                 issues.append("Missing Call-To-Action (CTA) element.")
+
+            if css_files:
+                checks_passed += 1
+            else:
+                issues.append("Missing styles.css stylesheet.")
+
+        # 2. Lead Research CSV Deliverable Tests
+        elif csv_files:
+            csv_text = csv_files[0].read_text(encoding="utf-8")
+            lines = [l.strip() for l in csv_text.splitlines() if l.strip()]
+            if len(lines) >= 3:
+                checks_passed += 2
+            else:
+                issues.append("CSV deliverable contains fewer than 3 records.")
+
+            if any(col in lines[0].lower() for col in ("company", "name", "role", "email")):
+                checks_passed += 2
+            else:
+                issues.append("CSV missing required column headers.")
+
+        # 3. SEO Content & Article Deliverable Tests
+        elif md_files:
+            md_text = md_files[0].read_text(encoding="utf-8")
+            if md_text.startswith("#"):
+                checks_passed += 2
+            else:
+                issues.append("Article missing top-level H1 title.")
+
+            if len(md_text.split()) >= 80:
+                checks_passed += 2
+            else:
+                issues.append("Article length below target threshold.")
+
         else:
-            issues.append("No HTML deliverable generated in sandbox.")
+            issues.append("No recognized deliverable (HTML, CSV, or MD) found in sandbox.")
 
-        if css_files:
-            checks_passed += 1
-
-        total_checks = 4
-        score = min(10.0, round((checks_passed / total_checks) * 10.0, 1))
+        score = min(10.0, round((checks_passed / max(1, total_checks)) * 10.0, 1))
         verdict = "approved" if score >= 7.0 else "rejected"
 
         return {

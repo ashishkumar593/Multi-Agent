@@ -18,6 +18,8 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 from backend.db.company_database import CompanySession as Session
 
+from backend.core.config import settings
+from backend.core.llm import LLMClient
 from backend.db.company_models import (
     AgentModel,
     BudgetLedgerModel,
@@ -31,9 +33,10 @@ from backend.tools.company_tools import CompanyToolRegistry
 class GenericAgentRunner:
     """Universal execution runner for any role-based agent."""
 
-    def __init__(self, db: Session):
+    def __init__(self, db: Session, llm_client: LLMClient | None = None):
         self.db = db
         self.tools = CompanyToolRegistry(db)
+        self.llm = llm_client or LLMClient()
 
     def heartbeat(self, agent_id: str) -> None:
         """Update last heartbeat timestamp to signal agent is alive."""
@@ -101,9 +104,15 @@ class GenericAgentRunner:
 
         self.heartbeat(agent_id)
 
-        # Approximate token usage and cost for budget ledger
-        tokens_used = 1200
-        cost_estimated = 0.0024  # $0.0024 per task turn
+        # Call LLM client with role system prompt and model tier
+        model_name = settings.default_model if spec.model_tier == "strong" else settings.fast_model
+        llm_out = self.llm.generate(
+            prompt=f"Task: {task.title}\nSpecification: {task.spec}",
+            system_prompt=spec.system_prompt,
+            model_override=model_name,
+        )
+        tokens_used = llm_out.get("tokens", 1200)
+        cost_estimated = llm_out.get("cost", 0.0024)
 
         # ------------------------------------------------------------------
         # Task Execution Logic by Role
@@ -111,8 +120,25 @@ class GenericAgentRunner:
         result_payload: dict[str, Any] = {}
 
         if agent.role == "developer":
-            # Developer builds responsive HTML/CSS deliverable in sandbox
-            html_content = f"""<!DOCTYPE html>
+            if "csv" in task.title.lower() or "lead" in task.title.lower():
+                # Developer builds structured CSV lead database in sandbox
+                csv_content = """Company,Industry,Headcount,Contact Role,Estimated ARR,Fit Score
+GreenLogix,CleanTech,120,Head of Sustainability,$18M,94%
+EcoRoast Supply,Specialty Coffee,45,Director of Operations,$8M,91%
+BioPack Global,Sustainable Packaging,310,VP Procurement,$54M,96%
+Canopy ColdBrew,Beverage,30,Founder & CEO,$4M,88%
+EarthFirst Logistics,Retail Supply Chain,220,VP Sourcing,$32M,92%
+"""
+                self.tools.write_file("leads.csv", csv_content, agent_id)
+                self.tools.run_sandbox("validate_csv leads.csv", agent_id)
+                result_payload = {
+                    "message": "Structured B2B lead list exported to leads.csv.",
+                    "files": ["leads.csv"],
+                    "leads_count": 5,
+                }
+            else:
+                # Developer builds responsive HTML/CSS deliverable in sandbox
+                html_content = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -148,7 +174,7 @@ class GenericAgentRunner:
     </section>
 </body>
 </html>"""
-            css_content = """body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; color: #1f2937; }
+                css_content = """body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; color: #1f2937; }
 .hero { background: linear-gradient(135deg, #064e3b 0%, #047857 100%); color: white; padding: 60px 20px; text-align: center; }
 .navbar { display: flex; justify-content: space-between; align-items: center; max-width: 1100px; margin: 0 auto; padding-bottom: 40px; }
 .logo { font-size: 1.5rem; font-weight: bold; }
@@ -158,25 +184,47 @@ class GenericAgentRunner:
 .features { display: flex; justify-content: center; gap: 24px; padding: 60px 20px; max-width: 1100px; margin: 0 auto; }
 .card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 24px; flex: 1; text-align: center; }
 """
-            self.tools.write_file("index.html", html_content, agent_id)
-            self.tools.write_file("styles.css", css_content, agent_id)
-            self.tools.run_sandbox("validate_html5 index.html", agent_id)
+                self.tools.write_file("index.html", html_content, agent_id)
+                self.tools.write_file("styles.css", css_content, agent_id)
+                self.tools.run_sandbox("validate_html5 index.html", agent_id)
 
-            result_payload = {
-                "message": "HTML and CSS landing page drafted and saved to sandbox.",
-                "files": ["index.html", "styles.css"],
-            }
+                result_payload = {
+                    "message": "HTML and CSS landing page drafted and saved to sandbox.",
+                    "files": ["index.html", "styles.css"],
+                }
 
         elif agent.role in ("marketing", "researcher"):
-            # Market research & copywriting
-            search_res = self.tools.web_search(task.title, agent_id)
-            headline = "Brewing a Greener Tomorrow, One Cup at a Time."
-            usp = "100% shade-grown single origin coffee with zero plastic waste."
-            result_payload = {
-                "headline": headline,
-                "usp": usp,
-                "evidence": search_res.get("results", []),
-            }
+            if "article" in task.title.lower() or "seo" in task.title.lower():
+                # Marketing drafts complete SEO article in sandbox
+                article_content = """# The Rise of Carbon-Negative Specialty Coffee in 2026
+
+## Executive Summary
+Sustainable consumer habits are rapidly transforming commercial beverage markets, driving unprecedented demand for regeneratively farmed, shade-grown single-origin beans.
+
+## Key Industry Drivers
+1. **Backyard Compostable Packaging**: Zero plastic waste bio-films prevent microplastic degradation.
+2. **Solar Convection Roasting**: Eliminates fossil gas roasters while preserving delicate floral terpene notes.
+3. **Direct-Trade Price Floors**: Producers earn 40% over standard organic baselines.
+
+## Conclusion & Strategic Recommendations
+Brands modernizing supply chains today capture prime retail distribution and loyalty among conscious consumers.
+"""
+                self.tools.write_file("article.md", article_content, agent_id)
+                result_payload = {
+                    "headline": "The Rise of Carbon-Negative Specialty Coffee in 2026",
+                    "files": ["article.md"],
+                    "word_count": len(article_content.split()),
+                }
+            else:
+                # Market research & copywriting
+                search_res = self.tools.web_search(task.title, agent_id)
+                headline = "Brewing a Greener Tomorrow, One Cup at a Time."
+                usp = "100% shade-grown single origin coffee with zero plastic waste."
+                result_payload = {
+                    "headline": headline,
+                    "usp": usp,
+                    "evidence": search_res.get("results", []),
+                }
 
         elif agent.role == "liaison":
             # Human Liaison checking if task requires human approval gate

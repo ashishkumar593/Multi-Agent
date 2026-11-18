@@ -91,14 +91,32 @@ with st.sidebar:
 
     st.markdown("---")
     st.header("🎯 Launch New Project")
+    biz_choice = st.selectbox(
+        "Select Business Model:",
+        ["Website & Landing Page Agency", "B2B Lead Research Service", "SEO Content & Copywriting Agency"],
+    )
+    biz_type_map = {
+        "Website & Landing Page Agency": "website",
+        "B2B Lead Research Service": "lead_research",
+        "SEO Content & Copywriting Agency": "seo_content",
+    }
+    default_goals = {
+        "Website & Landing Page Agency": "Build a responsive landing page for VerdeBrew eco-friendly coffee",
+        "B2B Lead Research Service": "Generate 50 qualified B2B leads for CleanTech sustainable packaging",
+        "SEO Content & Copywriting Agency": "Write an in-depth SEO pillar article on Carbon-Negative Specialty Coffee",
+    }
     new_goal = st.text_area(
         "Business Objective for CEO:",
-        value="Build a responsive landing page for VerdeBrew eco-friendly coffee",
+        value=default_goals[biz_choice],
         height=80,
     )
     if st.button("Submit to CEO Agent", use_container_width=True):
-        orch.start_project(goal=new_goal, project_name="VerdeBrew Campaign")
-        st.success("CEO registered project and Manager created task board!")
+        orch.start_project(
+            goal=new_goal,
+            project_name=f"{biz_choice.split()[0]} Campaign",
+            business_type=biz_type_map[biz_choice],
+        )
+        st.success(f"CEO registered project for {biz_choice} and Manager created task board!")
         st.rerun()
 
 # Top Action Bar: Simulation Steppers
@@ -241,24 +259,42 @@ with tab_agents:
 # TAB 4: Live Deliverable Preview
 # -------------------------------------------------------------
 with tab_preview:
-    st.subheader("🌐 Deliverable Sandbox Output (VerdeBrew Landing Page)")
+    st.subheader("📦 Deliverable Sandbox Outputs")
     sandbox_html = Path("./sandbox/index.html")
     sandbox_css = Path("./sandbox/styles.css")
+    sandbox_csv = Path("./sandbox/leads.csv")
+    sandbox_md = Path("./sandbox/article.md")
 
-    if not sandbox_html.exists():
-        st.info("Deliverable not yet drafted. Run the project tasks from the dashboard to generate the website.")
-    else:
-        html_code = sandbox_html.read_text(encoding="utf-8")
-        css_code = sandbox_css.read_text(encoding="utf-8") if sandbox_css.exists() else ""
+    p_tab1, p_tab2, p_tab3 = st.tabs(["🌐 Website Preview", "📊 Lead List (CSV)", "📝 SEO Article (MD)"])
 
-        full_preview = f"<style>{css_code}</style>\n{html_code}"
+    with p_tab1:
+        if not sandbox_html.exists():
+            st.info("Website deliverable not yet created. Launch a Website Agency project to generate.")
+        else:
+            html_code = sandbox_html.read_text(encoding="utf-8")
+            css_code = sandbox_css.read_text(encoding="utf-8") if sandbox_css.exists() else ""
+            full_preview = f"<style>{css_code}</style>\n{html_code}"
+            st.components.v1.html(full_preview, height=500, scrolling=True)
+            col_d1, col_d2 = st.columns(2)
+            with col_d1:
+                st.download_button("📥 Download index.html", data=html_code, file_name="index.html", mime="text/html")
+            with col_d2:
+                st.download_button("📥 Download styles.css", data=css_code, file_name="styles.css", mime="text/css")
 
-        st.components.v1.html(full_preview, height=550, scrolling=True)
+    with p_tab2:
+        if not sandbox_csv.exists():
+            st.info("Lead list deliverable not yet created. Launch a Lead Research project to generate.")
+        else:
+            csv_text = sandbox_csv.read_text(encoding="utf-8")
+            st.code(csv_text, language="csv")
+            st.download_button("📥 Download leads.csv", data=csv_text, file_name="leads.csv", mime="text/csv")
 
-        col_d1, col_d2 = st.columns(2)
-        with col_d1:
-            st.download_button("📥 Download index.html", data=html_code, file_name="index.html", mime="text/html")
-        with col_d2:
-            st.download_button("📥 Download styles.css", data=css_code, file_name="styles.css", mime="text/css")
+    with p_tab3:
+        if not sandbox_md.exists():
+            st.info("SEO article deliverable not yet created. Launch an SEO Content project to generate.")
+        else:
+            md_text = sandbox_md.read_text(encoding="utf-8")
+            st.markdown(md_text)
+            st.download_button("📥 Download article.md", data=md_text, file_name="article.md", mime="text/markdown")
 
 db.close()

@@ -25,9 +25,12 @@ from backend.db.company_database import SessionLocal, init_db
 from backend.db.company_models import AgentModel, BlockerModel, TaskModel
 
 
-def run_company_simulation(goal: str = "Build a responsive landing page for VerdeBrew eco-friendly coffee"):
+def run_company_simulation(
+    goal: str = "Build a responsive landing page for VerdeBrew eco-friendly coffee",
+    business: str = "website",
+):
     print("\n==================================================================")
-    print("  🏢 AUTONOMOUS AI COMPANY: END-TO-END EXECUTION RUNNER")
+    print(f"  🏢 AUTONOMOUS AI COMPANY: {business.upper()} EXECUTION RUNNER")
     print("==================================================================")
 
     init_db(reset=True)
@@ -39,7 +42,7 @@ def run_company_simulation(goal: str = "Build a responsive landing page for Verd
 
     # 1. CEO & Manager create project
     print("\n[CEO AGENT]: Evaluating business goal and initializing project...")
-    project = orch.start_project(goal=goal, project_name="VerdeBrew Landing Page Project")
+    project = orch.start_project(goal=goal, project_name=f"{business.title()} Campaign", business_type=business)
     print(f"  -> Project '{project.name}' (ID: {project.id}) registered with budget ${project.budget_limit:.2f}.")
 
     tasks = db.query(TaskModel).filter(TaskModel.project_id == project.id).all()
@@ -101,12 +104,17 @@ def run_company_simulation(goal: str = "Build a responsive landing page for Verd
     for a in agents:
         print(f"  - [{a.role.upper():12}] {a.id:16} | Performance Score: {a.score:.1f} pts | Status: {a.status}")
 
-    sandbox_html = Path("./sandbox/index.html")
-    sandbox_css = Path("./sandbox/styles.css")
-    if sandbox_html.exists():
-        print(f"\nDeliverable Output Generated:")
-        print(f"  - HTML: {sandbox_html.resolve()} ({sandbox_html.stat().st_size} bytes)")
-        print(f"  - CSS:  {sandbox_css.resolve()} ({sandbox_css.stat().st_size} bytes)")
+    sandbox_files = [
+        Path("./sandbox/index.html"),
+        Path("./sandbox/styles.css"),
+        Path("./sandbox/leads.csv"),
+        Path("./sandbox/article.md"),
+    ]
+    present_files = [f for f in sandbox_files if f.exists()]
+    if present_files:
+        print("\nDeliverables Generated in Sandbox:")
+        for pf in present_files:
+            print(f"  - {pf.name:12}: {pf.resolve()} ({pf.stat().st_size} bytes)")
 
     print("==================================================================\n")
     db.close()
@@ -114,6 +122,14 @@ def run_company_simulation(goal: str = "Build a responsive landing page for Verd
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run Autonomous AI Company simulation")
-    parser.add_argument("--goal", default="Build a responsive landing page for VerdeBrew eco-friendly coffee", help="Goal text")
+    parser.add_argument("--business", choices=["website", "lead_research", "seo_content"], default="website", help="Business type")
+    parser.add_argument("--goal", default=None, help="Custom goal text")
     args = parser.parse_args()
-    run_company_simulation(args.goal)
+
+    default_goals = {
+        "website": "Build a responsive landing page for VerdeBrew eco-friendly coffee",
+        "lead_research": "Generate 50 qualified B2B leads for CleanTech sustainable packaging",
+        "seo_content": "Write an in-depth SEO pillar article on Carbon-Negative Specialty Coffee",
+    }
+    goal = args.goal or default_goals[args.business]
+    run_company_simulation(goal=goal, business=args.business)
