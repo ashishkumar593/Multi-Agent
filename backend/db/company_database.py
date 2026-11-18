@@ -536,7 +536,7 @@ def init_db(reset: bool = False) -> None:
             TeamModel("team_exec", "Executive Leadership", min_headcount=1, max_headcount=2),
             TeamModel("team_eng", "Engineering & Product", min_headcount=1, max_headcount=5),
             TeamModel("team_mktg", "Marketing & Content", min_headcount=1, max_headcount=4),
-            TeamModel("team_ops", "Operations & Quality", min_headcount=1, max_headcount=3),
+            TeamModel("team_ops", "Operations & Quality", min_headcount=1, max_headcount=6),
         ]
         db.add_all(teams)
 

@@ -34,17 +34,175 @@ from backend.db.company_models import (
     TaskModel,
 )
 
-# Custom Styling
+# Custom Modern Glassmorphic & Ultra-Pro Styling
 st.markdown(
     """
     <style>
-    .main-header { font-size: 2.2rem; font-weight: 700; color: #0F172A; margin-bottom: 0.2rem; }
-    .sub-header { font-size: 1.05rem; color: #475569; margin-bottom: 1.5rem; }
-    .status-badge-alive { background-color: #10B981; color: white; padding: 3px 8px; border-radius: 10px; font-weight: 600; font-size: 0.8rem; }
-    .status-badge-busy { background-color: #3B82F6; color: white; padding: 3px 8px; border-radius: 10px; font-weight: 600; font-size: 0.8rem; }
-    .status-badge-dead { background-color: #EF4444; color: white; padding: 3px 8px; border-radius: 10px; font-weight: 600; font-size: 0.8rem; }
-    .status-badge-blocked { background-color: #F59E0B; color: white; padding: 3px 8px; border-radius: 10px; font-weight: 600; font-size: 0.8rem; }
-    .card-task { background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px; margin-bottom: 10px; }
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    
+    html, body, [class*="css"] {
+        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    }
+    
+    code, pre {
+        font-family: 'JetBrains Mono', monospace !important;
+    }
+
+    /* Hero Header container */
+    .hero-container {
+        padding: 1.5rem 1.8rem;
+        border-radius: 16px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(241, 245, 249, 0.85) 100%);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+        margin-bottom: 1.8rem;
+    }
+
+    .main-header { 
+        font-size: 2.3rem; 
+        font-weight: 800; 
+        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #2563eb 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -0.03em;
+        margin-bottom: 0.2rem; 
+    }
+    .sub-header { 
+        font-size: 1.05rem; 
+        color: #475569; 
+        font-weight: 500;
+        line-height: 1.5;
+    }
+
+    /* Glass Task Cards */
+    .task-card-glass {
+        background: rgba(255, 255, 255, 0.88);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(226, 232, 240, 0.85);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 0.9rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .task-card-glass:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+    }
+    
+    /* Kanban Badges */
+    .status-badge-alive { 
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%); 
+        color: white; 
+        padding: 4px 10px; 
+        border-radius: 9999px; 
+        font-weight: 700; 
+        font-size: 0.72rem; 
+        letter-spacing: 0.05em; 
+        text-transform: uppercase; 
+        box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
+    }
+    .status-badge-busy { 
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); 
+        color: white; 
+        padding: 4px 10px; 
+        border-radius: 9999px; 
+        font-weight: 700; 
+        font-size: 0.72rem; 
+        letter-spacing: 0.05em; 
+        text-transform: uppercase; 
+        box-shadow: 0 2px 6px rgba(59, 130, 246, 0.25);
+    }
+    .status-badge-dead { 
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); 
+        color: white; 
+        padding: 4px 10px; 
+        border-radius: 9999px; 
+        font-weight: 700; 
+        font-size: 0.72rem; 
+        letter-spacing: 0.05em; 
+        text-transform: uppercase; 
+        box-shadow: 0 2px 6px rgba(239, 68, 68, 0.25);
+    }
+    .status-badge-blocked { 
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); 
+        color: white; 
+        padding: 4px 10px; 
+        border-radius: 9999px; 
+        font-weight: 700; 
+        font-size: 0.72rem; 
+        letter-spacing: 0.05em; 
+        text-transform: uppercase; 
+        box-shadow: 0 2px 6px rgba(245, 158, 11, 0.25);
+    }
+    .status-badge-retired { 
+        background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); 
+        color: white; 
+        padding: 4px 10px; 
+        border-radius: 9999px; 
+        font-weight: 700; 
+        font-size: 0.72rem; 
+        letter-spacing: 0.05em; 
+        text-transform: uppercase; 
+    }
+    .status-badge-idle { 
+        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); 
+        color: white; 
+        padding: 4px 10px; 
+        border-radius: 9999px; 
+        font-weight: 700; 
+        font-size: 0.72rem; 
+        letter-spacing: 0.05em; 
+        text-transform: uppercase; 
+        box-shadow: 0 2px 6px rgba(6, 182, 212, 0.25);
+    }
+    
+    /* Modern Glass Metric Cards */
+    div[data-testid="stMetric"] {
+        background: rgba(255, 255, 255, 0.85) !important;
+        backdrop-filter: blur(12px) !important;
+        border: 1px solid rgba(226, 232, 240, 0.9) !important;
+        box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04) !important;
+        border-radius: 14px !important;
+        padding: 1rem 1.2rem !important;
+    }
+    div[data-testid="stMetricValue"] {
+        font-weight: 800 !important;
+        color: #0f172a !important;
+        font-size: 1.8rem !important;
+    }
+    div[data-testid="stMetricLabel"] {
+        font-size: 0.82rem !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+        color: #64748b !important;
+    }
+
+    /* Tabs Styling */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+        background: rgba(241, 245, 249, 0.6);
+        padding: 6px;
+        border-radius: 12px;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    .stTabs [data-baseweb="tab"] {
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.92rem;
+        padding: 8px 16px;
+        color: #475569;
+        transition: all 0.2s ease;
+    }
+    .stTabs [aria-selected="true"] {
+        background-color: #ffffff !important;
+        color: #1e40af !important;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -55,10 +213,14 @@ init_db()
 db = SessionLocal()
 orch = CompanyOrchestrator(db)
 
-# Header
-st.markdown('<div class="main-header">🏢 Autonomous AI Company Cockpit</div>', unsafe_allow_html=True)
+# Hero Header Container
 st.markdown(
-    '<div class="sub-header">Human-Supervised Multi-Agent Organization with Autonomous Execution, Health Monitoring & Reward Scoring.</div>',
+    """
+    <div class="hero-container">
+        <div class="main-header">🏢 Autonomous AI Company Cockpit</div>
+        <div class="sub-header">Executive-Grade Multi-Agent Operating System with Autonomous Task Cycles, Self-Healing Daemons & Real-Time Quality Scoring.</div>
+    </div>
+    """,
     unsafe_allow_html=True,
 )
 
@@ -79,6 +241,15 @@ with st.sidebar:
             CompanyMonitor.trip_kill_switch("Human Owner Emergency Pause")
             st.rerun()
 
+    # Auto-Refresh Toggle
+    st.markdown("---")
+    st.subheader("🔄 Real-Time Polling")
+    auto_refresh = st.toggle("Enable Live Auto-Poll (4s)", value=False)
+    if auto_refresh:
+        import time
+        time.sleep(4)
+        st.rerun()
+
     st.markdown("---")
     st.header("📊 Financial Ledger")
     total_tokens = sum(row.tokens for row in db.query(BudgetLedgerModel).all())
@@ -93,17 +264,24 @@ with st.sidebar:
     st.header("🎯 Launch New Project")
     biz_choice = st.selectbox(
         "Select Business Model:",
-        ["Website & Landing Page Agency", "B2B Lead Research Service", "SEO Content & Copywriting Agency"],
+        [
+            "Website & Landing Page Agency",
+            "B2B Lead Research Service",
+            "SEO Content & Copywriting Agency",
+            "Data & Market Report Service",
+        ],
     )
     biz_type_map = {
         "Website & Landing Page Agency": "website",
         "B2B Lead Research Service": "lead_research",
         "SEO Content & Copywriting Agency": "seo_content",
+        "Data & Market Report Service": "data_report",
     }
     default_goals = {
         "Website & Landing Page Agency": "Build a responsive landing page for VerdeBrew eco-friendly coffee",
         "B2B Lead Research Service": "Generate 50 qualified B2B leads for CleanTech sustainable packaging",
         "SEO Content & Copywriting Agency": "Write an in-depth SEO pillar article on Carbon-Negative Specialty Coffee",
+        "Data & Market Report Service": "Compile Q4 Market & Operations Performance Report with KPIs and Charts",
     }
     new_goal = st.text_area(
         "Business Objective for CEO:",
@@ -143,11 +321,13 @@ with c_act3:
 st.markdown("---")
 
 # Main View Tabs
-tab_board, tab_blockers, tab_agents, tab_preview = st.tabs([
+tab_board, tab_blockers, tab_agents, tab_preview, tab_analytics, tab_factory = st.tabs([
     "📋 Live Task Board (Kanban)",
     "🚨 Human Liaison & Blockers",
     "👥 Agent Org Chart & Health",
     "🌐 Live Deliverable Preview",
+    "📈 Performance & Analytics",
+    "🏭 Agent Factory",
 ])
 
 # -------------------------------------------------------------
@@ -160,47 +340,84 @@ with tab_board:
     with col_todo:
         st.subheader("📝 TODO")
         for t in [t for t in all_tasks if t.status == "todo"]:
-            with st.container():
-                st.markdown(f"**{t.title}**")
-                st.caption(f"Team: `{t.team_id}` | Attempts: {t.attempts}")
-                if t.depends_on:
-                    st.caption(f"Depends on: {', '.join(t.depends_on)}")
-                st.divider()
+            deps = f"<br><span style='color:#64748b; font-size:0.75rem;'>🔗 Deps: {', '.join(t.depends_on)}</span>" if t.depends_on else ""
+            st.markdown(
+                f"""
+                <div class="task-card-glass">
+                    <div style="font-weight: 700; color: #1e293b; margin-bottom: 4px;">{t.title}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+                        <span style="font-size: 0.78rem; color: #64748b; font-family: monospace;">Dept: {t.team_id}</span>
+                        <span style="font-size: 0.75rem; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #475569;">Try #{t.attempts}</span>
+                    </div>
+                    {deps}
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
     with col_doing:
         st.subheader("⚙️ DOING")
         for t in [t for t in all_tasks if t.status == "doing"]:
-            with st.container():
-                st.markdown(f"**{t.title}**")
-                st.caption(f"Worker: `{t.owner_agent_id}`")
-                st.markdown('<span class="status-badge-busy">IN PROGRESS</span>', unsafe_allow_html=True)
-                st.divider()
+            st.markdown(
+                f"""
+                <div class="task-card-glass" style="border-left: 3px solid #3b82f6;">
+                    <div style="font-weight: 700; color: #1e293b; margin-bottom: 4px;">{t.title}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                        <span class="status-badge-busy">IN PROGRESS</span>
+                        <span style="font-size: 0.78rem; color: #3b82f6; font-family: monospace; font-weight: 600;">{t.owner_agent_id}</span>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
     with col_review:
         st.subheader("🔍 REVIEW")
         for t in [t for t in all_tasks if t.status == "review"]:
-            with st.container():
-                st.markdown(f"**{t.title}**")
-                st.caption(f"Submitted by: `{t.owner_agent_id}`")
-                st.markdown('<span class="status-badge-busy">PENDING REVIEW</span>', unsafe_allow_html=True)
-                st.divider()
+            st.markdown(
+                f"""
+                <div class="task-card-glass" style="border-left: 3px solid #f59e0b;">
+                    <div style="font-weight: 700; color: #1e293b; margin-bottom: 4px;">{t.title}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                        <span class="status-badge-idle">TESTING</span>
+                        <span style="font-size: 0.78rem; color: #64748b; font-family: monospace;">{t.owner_agent_id}</span>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
     with col_done:
         st.subheader("✅ DONE")
         for t in [t for t in all_tasks if t.status == "done"]:
-            with st.container():
-                st.markdown(f"**{t.title}**")
-                st.caption(f"Owner: `{t.owner_agent_id or 'Complete'}`")
-                st.markdown('<span class="status-badge-alive">APPROVED</span>', unsafe_allow_html=True)
-                st.divider()
+            st.markdown(
+                f"""
+                <div class="task-card-glass" style="border-left: 3px solid #10b981;">
+                    <div style="font-weight: 700; color: #1e293b; margin-bottom: 4px;">{t.title}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                        <span class="status-badge-alive">APPROVED</span>
+                        <span style="font-size: 0.78rem; color: #10b981; font-family: monospace; font-weight: 600;">✓ Verified</span>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
     with col_blocked:
         st.subheader("🚨 BLOCKED")
         for t in [t for t in all_tasks if t.status == "blocked"]:
-            with st.container():
-                st.markdown(f"**{t.title}**")
-                st.markdown('<span class="status-badge-blocked">WAITING APPROVAL</span>', unsafe_allow_html=True)
-                st.divider()
+            st.markdown(
+                f"""
+                <div class="task-card-glass" style="border-left: 3px solid #ef4444; background: rgba(254, 242, 242, 0.85);">
+                    <div style="font-weight: 700; color: #991b1b; margin-bottom: 4px;">{t.title}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                        <span class="status-badge-blocked">WAITING HUMAN</span>
+                        <span style="font-size: 0.78rem; color: #b91c1c; font-weight: 600;">Needs Sign-Off</span>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
 # -------------------------------------------------------------
 # TAB 2: Human Liaison & Approval Inbox
@@ -266,13 +483,17 @@ with tab_preview:
     sandbox_md = Path("./sandbox/article.md")
     sandbox_pdf = Path("./sandbox/article_report.pdf")
     sandbox_outreach = Path("./sandbox/outreach_campaign.txt")
+    sandbox_metrics = Path("./sandbox/metrics.json")
+    sandbox_data_report = Path("./sandbox/data_report.md")
+    sandbox_data_pdf = Path("./sandbox/data_report.pdf")
 
-    p_tab1, p_tab2, p_tab3, p_tab4, p_tab5 = st.tabs([
+    p_tab1, p_tab2, p_tab3, p_tab4, p_tab5, p_tab6 = st.tabs([
         "🌐 Website Preview",
         "📊 Lead List (CSV)",
         "📝 SEO Article (MD)",
-        "📄 Exported PDF Report",
-        "✉️ Cold Outreach Emails"
+        "📄 Exported Article PDF",
+        "✉️ Cold Outreach Emails",
+        "📈 Executive Data Report"
     ])
 
     with p_tab1:
@@ -320,5 +541,152 @@ with tab_preview:
             outreach_text = sandbox_outreach.read_text(encoding="utf-8")
             st.text_area("Cold Outreach Email Sequence", value=outreach_text, height=350)
             st.download_button("📥 Download outreach_campaign.txt", data=outreach_text, file_name="outreach_campaign.txt", mime="text/plain")
+
+    with p_tab6:
+        if not sandbox_data_report.exists():
+            st.info("Executive data report not yet created. Launch a Data & Market Report project to generate.")
+        else:
+            if sandbox_metrics.exists():
+                st.markdown("##### 📊 Statistical Metrics Summary (metrics.json)")
+                try:
+                    m_data = json.loads(sandbox_metrics.read_text(encoding="utf-8"))
+                    kpis = m_data.get("kpis", {})
+                    col_m1, col_m2, col_m3, col_m4 = st.columns(4)
+                    kpi_items = list(kpis.items())
+                    if len(kpi_items) >= 4:
+                        col_m1.metric("Market Growth", kpi_items[0][1])
+                        col_m2.metric("Retention", kpi_items[1][1])
+                        col_m3.metric("Gross Margin", kpi_items[2][1])
+                        col_m4.metric("Carbon Offset", f"{kpi_items[3][1]} T")
+                except Exception:
+                    pass
+
+            st.markdown("---")
+            dr_text = sandbox_data_report.read_text(encoding="utf-8")
+            st.markdown(dr_text)
+
+            col_dr1, col_dr2 = st.columns(2)
+            with col_dr1:
+                st.download_button("📥 Download data_report.md", data=dr_text, file_name="data_report.md", mime="text/markdown")
+            with col_dr2:
+                if sandbox_data_pdf.exists():
+                    st.download_button("📥 Download data_report.pdf", data=sandbox_data_pdf.read_bytes(), file_name="data_report.pdf", mime="application/pdf")
+
+# -------------------------------------------------------------
+# TAB 5: Performance & Spend Analytics
+# -------------------------------------------------------------
+with tab_analytics:
+    st.subheader("📈 Real-Time Performance & Spend Telemetry")
+
+    ledger_entries = db.query(BudgetLedgerModel).all()
+    tasks_all = db.query(TaskModel).all()
+    reviews_all = db.query(ReviewModel).all()
+    agents_all = db.query(AgentModel).all()
+
+    # High-level KPIs
+    kpi_col1, kpi_col2, kpi_col3, kpi_col4 = st.columns(4)
+    with kpi_col1:
+        st.metric("Total Tasks", len(tasks_all))
+    with kpi_col2:
+        completed = sum(1 for t in tasks_all if t.status == "done")
+        st.metric("Completed Tasks", completed)
+    with kpi_col3:
+        pass_rate = round((completed / max(1, len(tasks_all))) * 100, 1)
+        st.metric("Task Success Rate", f"{pass_rate}%")
+    with kpi_col4:
+        avg_score = round(sum(r.quality_score for r in reviews_all) / max(1, len(reviews_all)), 1)
+        st.metric("Avg Quality Score", f"{avg_score} / 10.0")
+
+    st.markdown("---")
+
+    col_chart1, col_chart2 = st.columns(2)
+
+    with col_chart1:
+        st.markdown("##### 💰 Spend by Agent")
+        agent_spend: dict[str, float] = {}
+        for row in ledger_entries:
+            agent_spend[row.agent_id] = round(agent_spend.get(row.agent_id, 0.0) + float(row.cost or 0.0), 4)
+
+        if agent_spend:
+            st.bar_chart(agent_spend)
+        else:
+            st.info("No ledger entries recorded yet.")
+
+    with col_chart2:
+        st.markdown("##### 🏆 Reward Points Standings")
+        agent_scores = {a.id: float(a.score or 0.0) for a in agents_all}
+        if agent_scores:
+            st.bar_chart(agent_scores)
+        else:
+            st.info("No agent scores available.")
+
+    st.markdown("---")
+    st.markdown("##### 📜 Recent Review Scorecards")
+    for r in reviews_all[-5:]:
+        st.write(f"• Task `{r.task_id}` by `{r.reviewer_id}`: **{r.verdict.upper()}** (Score: {r.quality_score}/10) — *{r.notes}*")
+
+# -------------------------------------------------------------
+# TAB 6: Dynamic Agent Factory (Runtime Role Creator)
+# -------------------------------------------------------------
+with tab_factory:
+    st.subheader("🏭 Dynamic Agent Factory & Custom Role Registry")
+    st.caption("CEO / HR can dynamically define and register new agent roles at runtime without code changes.")
+
+    with st.form("form_create_role"):
+        f_col1, f_col2 = st.columns(2)
+        with f_col1:
+            new_role_name = st.text_input("Role Identifier (lowercase, e.g. 'finance_analyst')", value="finance_analyst")
+            new_model_tier = st.selectbox("Model Tier", ["fast", "strong"])
+            new_dept = st.selectbox("Target Department", ["team_exec", "team_eng", "team_mktg", "team_ops"])
+        with f_col2:
+            new_max_steps = st.number_input("Max Execution Steps", min_value=1, max_value=20, value=6)
+            new_token_budget = st.number_input("Token Budget Per Task", min_value=1000, max_value=50000, value=12000, step=1000)
+
+        new_sys_prompt = st.text_area(
+            "System Prompt / Operational Persona",
+            value="You are a Senior Financial Analyst responsible for unit economics and SaaS runway models.",
+            height=90,
+        )
+
+        all_available_tools = [
+            "write_file", "read_file", "run_sandbox", "web_search", "rag_retrieve",
+            "export_pdf_report", "generate_email_sequence", "create_task", "read_board"
+        ]
+        selected_tools = st.multiselect(
+            "Whitelisted Tool Permissions",
+            options=all_available_tools,
+            default=["read_file", "write_file", "export_pdf_report", "rag_retrieve"],
+        )
+
+        btn_register = st.form_submit_button("🚀 Register Role Spec & Spawn Initial Agent", use_container_width=True)
+
+        if btn_register and new_role_name.strip():
+            orch.runner.tools.register_role_spec(
+                role=new_role_name.strip().lower(),
+                system_prompt=new_sys_prompt,
+                tools=selected_tools,
+                model_tier=new_model_tier,
+                max_steps=int(new_max_steps),
+                token_budget=int(new_token_budget),
+                agent_id="agent_ceo",
+            )
+            # Spawn initial worker into target department
+            spawn_res = orch.runner.tools.spawn_agent(
+                role=new_role_name.strip().lower(),
+                team_id=new_dept,
+                agent_id="agent_hr",
+            )
+            st.success(f"Role spec '{new_role_name}' registered! Spawned agent: `{spawn_res.get('agent_id')}`")
+            st.rerun()
+
+    st.markdown("---")
+    st.markdown("##### 📚 Currently Registered Role Templates")
+    from backend.db.company_models import RoleSpecModel
+    registered_specs = db.query(RoleSpecModel).all()
+    for spec in registered_specs:
+        with st.expander(f"⚙️ Role: {spec.role.upper()} | Model Tier: {spec.model_tier.upper()}"):
+            st.write(f"**Prompt**: {spec.system_prompt}")
+            st.write(f"**Tools**: `{spec.tools}`")
+            st.caption(f"Max Steps: {spec.max_steps} | Token Budget: {spec.token_budget:,}")
 
 db.close()

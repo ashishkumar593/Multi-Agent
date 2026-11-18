@@ -1,0 +1,25 @@
+{
+  "kpis": {
+    "annual_market_growth": "24.8%",
+    "customer_retention": "89.2%",
+    "gross_margin": "68.5%",
+    "carbon_offset_tons": 1420
+  },
+  "segments": [
+    {
+      "segment": "Direct-to-Consumer",
+      "share": "45%",
+      "growth": "+32%"
+    },
+    {
+      "segment": "Specialty Retail",
+      "share": "35%",
+      "growth": "+18%"
+    },
+    {
+      "segment": "Corporate Subscriptions",
+      "share": "20%",
+      "growth": "+41%"
+    }
+  ]
+}

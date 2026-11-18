@@ -109,12 +109,16 @@ def run_company_simulation(
         Path("./sandbox/styles.css"),
         Path("./sandbox/leads.csv"),
         Path("./sandbox/article.md"),
+        Path("./sandbox/article_report.pdf"),
+        Path("./sandbox/metrics.json"),
+        Path("./sandbox/data_report.md"),
+        Path("./sandbox/data_report.pdf"),
     ]
     present_files = [f for f in sandbox_files if f.exists()]
     if present_files:
         print("\nDeliverables Generated in Sandbox:")
         for pf in present_files:
-            print(f"  - {pf.name:12}: {pf.resolve()} ({pf.stat().st_size} bytes)")
+            print(f"  - {pf.name:18}: {pf.resolve()} ({pf.stat().st_size} bytes)")
 
     print("==================================================================\n")
     db.close()
@@ -122,7 +126,12 @@ def run_company_simulation(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run Autonomous AI Company simulation")
-    parser.add_argument("--business", choices=["website", "lead_research", "seo_content"], default="website", help="Business type")
+    parser.add_argument(
+        "--business",
+        choices=["website", "lead_research", "seo_content", "data_report"],
+        default="website",
+        help="Business type",
+    )
     parser.add_argument("--goal", default=None, help="Custom goal text")
     args = parser.parse_args()
 
@@ -130,6 +139,7 @@ if __name__ == "__main__":
         "website": "Build a responsive landing page for VerdeBrew eco-friendly coffee",
         "lead_research": "Generate 50 qualified B2B leads for CleanTech sustainable packaging",
         "seo_content": "Write an in-depth SEO pillar article on Carbon-Negative Specialty Coffee",
+        "data_report": "Compile Q4 Market & Operations Performance Report with KPIs and Charts",
     }
     goal = args.goal or default_goals[args.business]
     run_company_simulation(goal=goal, business=args.business)

@@ -95,6 +95,44 @@ class CompanyOrchestrator:
                     "depends_on": [f"{proj_id}_t4"],
                 },
             ]
+        elif business_type == "data_report" or "report" in goal.lower() or "data" in goal.lower():
+            tasks_spec = [
+                {
+                    "id": f"{proj_id}_t1",
+                    "team_id": "team_mktg",
+                    "title": "Data Ingestion & Statistical Analysis",
+                    "spec": "Aggregate performance and market metrics into statistical summary.",
+                    "depends_on": [],
+                },
+                {
+                    "id": f"{proj_id}_t2",
+                    "team_id": "team_eng",
+                    "title": "Generate Analytical Metrics Dataset",
+                    "spec": "Compile and output structured metrics.json and dataset in sandbox.",
+                    "depends_on": [f"{proj_id}_t1"],
+                },
+                {
+                    "id": f"{proj_id}_t3",
+                    "team_id": "team_mktg",
+                    "title": "Draft Executive Data Report & Insights",
+                    "spec": "Produce detailed executive briefing data_report.md with KPIs and findings.",
+                    "depends_on": [f"{proj_id}_t2"],
+                },
+                {
+                    "id": f"{proj_id}_t4",
+                    "team_id": "team_eng",
+                    "title": "Compile Analytical PDF Briefing",
+                    "spec": "Export data_report.md to client-ready executive data_report.pdf.",
+                    "depends_on": [f"{proj_id}_t3"],
+                },
+                {
+                    "id": f"{proj_id}_t5",
+                    "team_id": "team_ops",
+                    "title": "Human Approval for Executive Release",
+                    "spec": "Gate executive report release behind human owner sign-off via Liaison.",
+                    "depends_on": [f"{proj_id}_t4"],
+                },
+            ]
         elif business_type == "seo_content" or "seo" in goal.lower() or "article" in goal.lower():
             tasks_spec = [
                 {
@@ -205,7 +243,7 @@ class CompanyOrchestrator:
         # Loop 3: Hiring Check
         hired = self._check_hiring_need()
 
-        # Loop 1: Task Execution Loop
+        # Loop 1: Parallel Task Execution Fan-Out
         executed_tasks = []
         idle_agents = (
             self.db.query(AgentModel)
@@ -213,13 +251,28 @@ class CompanyOrchestrator:
             .all()
         )
 
-        for agent in idle_agents:
-            if agent.role in ("reviewer", "ceo", "hr", "monitor"):
-                continue  # These operate on dedicated queues or triggers
-            claimed = self.runner.claim_task_atomically(agent.id)
+        # Separate operational agents from workers
+        workers = [a for a in idle_agents if a.role not in ("reviewer", "ceo", "hr", "monitor")]
+
+        # Claim tasks atomically for all available idle workers
+        worker_task_pairs = []
+        for worker in workers:
+            claimed = self.runner.claim_task_atomically(worker.id)
             if claimed:
-                res = self.runner.execute_task(agent.id, claimed)
-                executed_tasks.append(claimed.id)
+                worker_task_pairs.append((worker.id, claimed))
+
+        # Parallel fan-out execution using ThreadPoolExecutor
+        if worker_task_pairs:
+            from concurrent.futures import ThreadPoolExecutor
+            with ThreadPoolExecutor(max_workers=min(5, len(worker_task_pairs))) as executor:
+                futures = [
+                    executor.submit(self.runner.execute_task, w_id, task)
+                    for w_id, task in worker_task_pairs
+                ]
+                for f in futures:
+                    res = f.result()
+                    if res.get("task_id"):
+                        executed_tasks.append(res["task_id"])
 
         # Loop 4: Reward and Review Loop
         reviews_done = self._process_reviews()
@@ -307,6 +360,18 @@ class CompanyOrchestrator:
         blocker.resolved_at = datetime.now(timezone.utc)
 
         task = self.db.query(TaskModel).filter(TaskModel.id == blocker.task_id).first()
+        task_title = task.title if task else ""
+
+        # Persist human decision into LiaisonMemory so no agent repeats the question
+        from backend.company.memory import LiaisonMemory
+        memory = LiaisonMemory()
+        memory.record_decision(
+            task_title=task_title,
+            question_or_details=blocker.details or "",
+            human_decision=action,
+            blocker_id=blocker.id,
+        )
+
         if task:
             if action.lower() in ("approve", "approve & publish"):
                 task.status = "done"

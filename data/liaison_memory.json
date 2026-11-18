@@ -1,0 +1,18 @@
+[
+  {
+    "blocker_id": 1,
+    "task_title": "Human Approval for Public Deployment",
+    "query_summary": "task 'human approval for public deployment' requires human owner sign-off prior to external release.",
+    "decision": "Approve & Publish",
+    "resolved_by": "human_owner",
+    "timestamp": "2026-11-18T09:28:57.223703+00:00"
+  },
+  {
+    "blocker_id": 1,
+    "task_title": "Human Approval for Live Publishing",
+    "query_summary": "task 'human approval for live publishing' requires human owner sign-off prior to external release.",
+    "decision": "Approve & Publish",
+    "resolved_by": "human_owner",
+    "timestamp": "2026-11-18T09:53:06.454891+00:00"
+  }
+]

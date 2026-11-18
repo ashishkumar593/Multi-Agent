@@ -334,6 +334,46 @@ Enterprise Partnerships Team
         self.db.commit()
         return {"status": "spawned", "agent_id": new_id, "role": role}
 
+    def register_role_spec(
+        self,
+        role: str,
+        system_prompt: str,
+        tools: list[str],
+        model_tier: str = "fast",
+        max_steps: int = 6,
+        token_budget: int = 10000,
+        agent_id: str = "agent_ceo",
+    ) -> dict[str, Any]:
+        """Agent Factory: Register a brand-new role specification dynamically."""
+        self._verify_permission(agent_id, "spawn_agent" if agent_id == "agent_hr" else "create_project")
+        existing = self.db.query(RoleSpecModel).filter(RoleSpecModel.role == role).first()
+        if existing:
+            existing.system_prompt = system_prompt
+            existing.tools_json = json.dumps(tools)
+            existing.model_tier = model_tier
+            existing.max_steps = max_steps
+            existing.token_budget = token_budget
+        else:
+            new_spec = RoleSpecModel(
+                role=role,
+                system_prompt=system_prompt,
+                tools_json=json.dumps(tools),
+                model_tier=model_tier,
+                max_steps=max_steps,
+                token_budget=token_budget,
+            )
+            self.db.add(new_spec)
+
+        self.db.add(
+            EventModel(
+                agent_id=agent_id,
+                type="role_spec_registered",
+                payload_json=json.dumps({"role": role, "tools": tools, "model_tier": model_tier}),
+            )
+        )
+        self.db.commit()
+        return {"status": "registered", "role": role, "tools": tools}
+
     def retire_agent(self, target_agent_id: str, reason: str, agent_id: str) -> dict[str, Any]:
         """HR retires underperforming agent."""
         self._verify_permission(agent_id, "retire_agent")
@@ -363,8 +403,36 @@ Enterprise Partnerships Team
         options: list[str] | None,
         agent_id: str,
     ) -> dict[str, Any]:
-        """Liaison posts an escalation/approval blocker for the human owner."""
+        """Liaison checks memory for prior human decisions before posting a blocker."""
         self._verify_permission(agent_id, "post_blocker")
+
+        task = self.db.query(TaskModel).filter(TaskModel.id == task_id).first()
+        task_title = task.title if task else ""
+
+        # Section 8 Knowledge Base check: Never ask the same question twice!
+        from backend.company.memory import LiaisonMemory
+        memory = LiaisonMemory()
+        prior_decision = memory.find_existing_decision(task_title, details)
+        if prior_decision:
+            # Auto-apply human's past precedent
+            if task:
+                task.status = "done" if "approve" in prior_decision["decision"].lower() else "todo"
+                task.result = json.dumps({"auto_resolved_from_memory": prior_decision})
+            self.db.add(
+                EventModel(
+                    agent_id=agent_id,
+                    task_id=task_id,
+                    type="blocker_auto_resolved_via_memory",
+                    payload_json=json.dumps(prior_decision),
+                )
+            )
+            self.db.commit()
+            return {
+                "status": "auto_resolved_from_memory",
+                "prior_decision": prior_decision["decision"],
+                "task_id": task_id,
+            }
+
         blocker = BlockerModel(
             agent_id=agent_id,
             task_id=task_id,
@@ -377,7 +445,6 @@ Enterprise Partnerships Team
         self.db.add(blocker)
 
         # Update task status to blocked
-        task = self.db.query(TaskModel).filter(TaskModel.id == task_id).first()
         if task:
             task.status = "blocked"
 

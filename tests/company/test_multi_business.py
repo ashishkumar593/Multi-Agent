@@ -73,3 +73,36 @@ def test_seo_content_agency_workflow():
         content = article_md.read_text(encoding="utf-8")
         assert "# " in content
         assert "Carbon-Negative" in content
+
+
+def test_data_report_service_workflow():
+    """Verify Data Report Service runs end-to-end and outputs metrics.json, data_report.md, and PDF."""
+    with SessionLocal() as db:
+        orch = CompanyOrchestrator(db)
+        project = orch.start_project(
+            goal="Compile Q4 Market & Operations Performance Report",
+            project_name="Q4 Data Analytics Briefing",
+            business_type="data_report",
+        )
+
+        tasks = db.query(TaskModel).filter(TaskModel.project_id == project.id).all()
+        assert len(tasks) == 5
+        assert "Statistical" in tasks[0].title
+        assert "Metrics" in tasks[1].title
+
+        # Step through execution
+        for _ in range(5):
+            orch.step()
+
+        # Verify deliverables exist in sandbox
+        metrics_json = Path("./sandbox/metrics.json")
+        data_report_md = Path("./sandbox/data_report.md")
+        data_report_pdf = Path("./sandbox/data_report.pdf")
+
+        assert metrics_json.exists()
+        assert data_report_md.exists()
+        assert data_report_pdf.exists()
+
+        content = data_report_md.read_text(encoding="utf-8")
+        assert "# Executive Market & Operations Data Report" in content
+        assert "Annual Market Growth" in content

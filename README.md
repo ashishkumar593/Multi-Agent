@@ -117,34 +117,39 @@ Multi-Agent/
 
 ## ⚡ 4. Quickstart Guide
 
-### 1. Run Automated Test Suite (39 Tests)
+### 1. Run Automated Test Suite (42 Tests)
 ```powershell
 py -3.13 -m pytest -v
 ```
-*Expected: 37 passed, 2 skipped (fastapi optional checks in isolated environment), 0 failures in ~6s.*
+*Expected: 40 passed, 2 skipped (fastapi optional checks in isolated environment), 0 failures in ~8s.*
 
 ### 2. Launch the Streamlit Operations Cockpit
 ```powershell
 py -3.13 -m streamlit run frontend/app.py
 ```
-- **Kanban Board**: Real-time task cards (`TODO`, `DOING`, `REVIEW`, `DONE`, `BLOCKED`).
-- **Human Liaison Inbox**: 1-click approvals for public release and blocker unblocking.
-- **Agent Org Chart**: Live status, reward standings, and heartbeat indicators.
-- **Multi-Deliverable Preview**: Live rendered tabs for HTML/CSS landing pages, B2B lead CSV tables, and SEO Markdown articles.
-- **Emergency Controls**: One-click kill switch and financial spend ledger.
+- **Executive Glassmorphic UI**: Ultra-Pro visual theme with Plus Jakarta Sans and translucent card treatments.
+- **Kanban Board**: Real-time task cards (`TODO`, `DOING`, `REVIEW`, `DONE`, `BLOCKED`) with live 4s auto-polling.
+- **Human Liaison Inbox**: 1-click approvals with persistent memory deduplication.
+- **Agent Org Chart**: Live status badges, heartbeat telemetry, and reward standings.
+- **6-Tab Deliverable Preview**: Interactive viewer for Website HTML/CSS, Lead List CSV, SEO Markdown, Article PDF, Cold Outreach Emails, and Executive Data Reports.
+- **Agent Factory**: Runtime custom role creator to define specs and spawn new agents dynamically.
+- **Performance & Analytics**: Real-time KPI summary, agent spend breakdown, and review rubric scorecards.
 
 ### 3. Run Autonomous Multi-Business Simulations (CLI)
 ```powershell
-# Website & Landing Page Agency
+# 1. Website & Landing Page Agency
 py -3.13 scripts/run_company.py --business website
 
-# B2B Lead Research Service
+# 2. B2B Lead Research Service
 py -3.13 scripts/run_company.py --business lead_research
 
-# SEO & Content Marketing Agency
+# 3. SEO & Content Marketing Agency
 py -3.13 scripts/run_company.py --business seo_content
+
+# 4. Data & Market Analytics Service
+py -3.13 scripts/run_company.py --business data_report
 ```
-- CEO creates project ➔ Manager decomposes into dependent tasks ➔ Workers draft copy, code, and databases in sandbox ➔ Reviewer runs automated tests and assigns scores ➔ Human Liaison gates release ➔ Project completes.
+- CEO creates project ➔ Manager decomposes into dependent tasks ➔ Workers draft copy, code, datasets, and PDF reports in sandbox ➔ Reviewer runs automated tests and assigns scores ➔ Human Liaison gates release ➔ Project completes.
 
 ### 4. Run the Chaos Test (Worker Crash & Recovery)
 ```powershell
