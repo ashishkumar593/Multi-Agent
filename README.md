@@ -117,26 +117,34 @@ Multi-Agent/
 
 ## ⚡ 4. Quickstart Guide
 
-### 1. Run Automated Test Suite (33 Tests)
+### 1. Run Automated Test Suite (39 Tests)
 ```powershell
 py -3.13 -m pytest -v
 ```
-*Expected: 32 passed, 1 skipped (fastapi optional check), 0 failures in ~3s.*
+*Expected: 37 passed, 2 skipped (fastapi optional checks in isolated environment), 0 failures in ~6s.*
 
 ### 2. Launch the Streamlit Operations Cockpit
 ```powershell
 py -3.13 -m streamlit run frontend/app.py
 ```
-- **Kanban Board**: Real-time task cards (Todo, Doing, Review, Done, Blocked).
-- **Human Liaison Inbox**: 1-click approvals for public deployment.
-- **Agent Org Chart**: Live status, reward points, and heartbeat indicators.
-- **Deliverable Preview**: Interactive live preview of the generated landing page.
+- **Kanban Board**: Real-time task cards (`TODO`, `DOING`, `REVIEW`, `DONE`, `BLOCKED`).
+- **Human Liaison Inbox**: 1-click approvals for public release and blocker unblocking.
+- **Agent Org Chart**: Live status, reward standings, and heartbeat indicators.
+- **Multi-Deliverable Preview**: Live rendered tabs for HTML/CSS landing pages, B2B lead CSV tables, and SEO Markdown articles.
+- **Emergency Controls**: One-click kill switch and financial spend ledger.
 
-### 3. Run the Autonomous Company Simulation (CLI)
+### 3. Run Autonomous Multi-Business Simulations (CLI)
 ```powershell
-py -3.13 scripts/run_company.py
+# Website & Landing Page Agency
+py -3.13 scripts/run_company.py --business website
+
+# B2B Lead Research Service
+py -3.13 scripts/run_company.py --business lead_research
+
+# SEO & Content Marketing Agency
+py -3.13 scripts/run_company.py --business seo_content
 ```
-- CEO creates project ➔ Manager decomposes into 5 dependent tasks ➔ Workers draft copy and code in sandbox ➔ Reviewer runs automated tests ➔ Human Liaison gates release ➔ Project completes.
+- CEO creates project ➔ Manager decomposes into dependent tasks ➔ Workers draft copy, code, and databases in sandbox ➔ Reviewer runs automated tests and assigns scores ➔ Human Liaison gates release ➔ Project completes.
 
 ### 4. Run the Chaos Test (Worker Crash & Recovery)
 ```powershell
