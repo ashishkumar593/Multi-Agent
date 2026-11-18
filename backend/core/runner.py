@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import json
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 from backend.db.company_database import CompanySession as Session
 
@@ -222,10 +223,26 @@ Sustainable consumer habits are rapidly transforming commercial beverage markets
 Brands modernizing supply chains today capture prime retail distribution and loyalty among conscious consumers.
 """
                 self.tools.write_file("article.md", article_content, agent_id)
+                # Auto-generate PDF report deliverable
+                pdf_res = self.tools.export_pdf_report("article.md", "article_report.pdf", agent_id)
+
                 result_payload = {
                     "headline": "The Rise of Carbon-Negative Specialty Coffee in 2026",
-                    "files": ["article.md"],
+                    "files": ["article.md", "article_report.pdf"],
                     "word_count": len(article_content.split()),
+                    "pdf_bytes": pdf_res.get("bytes", 0),
+                }
+            elif "lead" in task.title.lower() or "enrich" in task.title.lower():
+                # Generate outreach email sequence if leads.csv exists
+                leads_file = Path("./sandbox/leads.csv")
+                files_out = ["leads_analysis.json"]
+                if leads_file.exists():
+                    self.tools.generate_email_sequence("leads.csv", "outreach_campaign.txt", agent_id)
+                    files_out.append("outreach_campaign.txt")
+
+                result_payload = {
+                    "summary": f"Lead intelligence and cold outreach sequence compiled for {task.title}.",
+                    "files": files_out,
                 }
             else:
                 # Market research & copywriting

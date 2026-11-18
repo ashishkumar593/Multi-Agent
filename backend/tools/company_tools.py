@@ -130,6 +130,101 @@ class CompanyToolRegistry:
             ],
         }
 
+    def export_pdf_report(self, markdown_filename: str, output_pdf_filename: str, agent_id: str) -> dict[str, Any]:
+        """Convert a markdown deliverable in sandbox into a formatted client-ready PDF report."""
+        self._verify_permission(agent_id, "export_pdf_report")
+        source_path = (SANDBOX_DIR / markdown_filename).resolve()
+        if not source_path.exists():
+            raise FileNotFoundError(f"Markdown file {markdown_filename} does not exist in sandbox.")
+
+        content = source_path.read_text(encoding="utf-8")
+        out_path = (SANDBOX_DIR / output_pdf_filename).resolve()
+
+        # Render PDF using PyMuPDF (fitz)
+        import fitz
+        doc = fitz.open()
+        page = doc.new_page(width=595, height=842) # A4 size
+
+        # Format title and sections cleanly
+        y = 50
+        lines = content.splitlines()
+        for line in lines:
+            if y > 780:
+                page = doc.new_page(width=595, height=842)
+                y = 50
+
+            if line.startswith("# "):
+                page.insert_text((50, y), line.replace("# ", "").strip(), fontsize=18, color=(0.04, 0.35, 0.25))
+                y += 32
+            elif line.startswith("## "):
+                page.insert_text((50, y), line.replace("## ", "").strip(), fontsize=14, color=(0.1, 0.2, 0.4))
+                y += 24
+            elif line.startswith("### "):
+                page.insert_text((50, y), line.replace("### ", "").strip(), fontsize=12, color=(0.2, 0.2, 0.2))
+                y += 18
+            elif line.strip():
+                # Clean simple markdown bolding for plain PDF rendering
+                clean_line = line.replace("**", "").replace("*", "")
+                page.insert_text((50, y), clean_line.strip(), fontsize=10, color=(0.15, 0.15, 0.15))
+                y += 16
+            else:
+                y += 8
+
+        doc.save(str(out_path))
+        doc.close()
+
+        return {
+            "status": "success",
+            "pdf_file": output_pdf_filename,
+            "bytes": out_path.stat().st_size,
+        }
+
+    def generate_email_sequence(self, leads_csv_filename: str, output_sequence_filename: str, agent_id: str) -> dict[str, Any]:
+        """Generate high-converting personalized cold outreach emails from sandbox leads.csv."""
+        self._verify_permission(agent_id, "generate_email_sequence")
+        csv_path = (SANDBOX_DIR / leads_csv_filename).resolve()
+        if not csv_path.exists():
+            raise FileNotFoundError(f"Leads CSV {leads_csv_filename} does not exist in sandbox.")
+
+        lines = csv_path.read_text(encoding="utf-8").strip().splitlines()
+        if len(lines) < 2:
+            raise ValueError("Leads CSV is empty or missing data rows.")
+
+        headers = [h.strip() for h in lines[0].split(",")]
+        rows = [line.split(",") for line in lines[1:]]
+
+        email_sequences = []
+        for row in rows:
+            record = dict(zip(headers, [c.strip() for c in row]))
+            company = record.get("Company", "Your Company")
+            role = record.get("Contact Role", "Decision Maker")
+            industry = record.get("Industry", "your industry")
+
+            email_text = f"""---
+To: {role} @ {company}
+Subject: Scaling sustainability & reducing packaging footprints at {company}
+
+Hi {role},
+
+I noticed {company}'s notable work within {industry}. We recently helped similar organizations eliminate microplastic waste while improving procurement margins by 22%.
+
+Would you be open to a 10-minute briefing next Tuesday on how we can streamline sustainable supply chains for {company}?
+
+Best regards,
+Enterprise Partnerships Team
+"""
+            email_sequences.append(email_text)
+
+        out_content = "\n".join(email_sequences)
+        out_path = (SANDBOX_DIR / output_sequence_filename).resolve()
+        out_path.write_text(out_content, encoding="utf-8")
+
+        return {
+            "status": "success",
+            "sequence_file": output_sequence_filename,
+            "emails_generated": len(rows),
+        }
+
     # -------------------------------------------------------------
     # 3. Leadership & Project Management Tools
     # -------------------------------------------------------------
@@ -357,14 +452,20 @@ class CompanyToolRegistry:
         elif md_files:
             md_text = md_files[0].read_text(encoding="utf-8")
             if md_text.startswith("#"):
-                checks_passed += 2
+                checks_passed += 1
             else:
                 issues.append("Article missing top-level H1 title.")
 
             if len(md_text.split()) >= 80:
-                checks_passed += 2
+                checks_passed += 1
             else:
                 issues.append("Article length below target threshold.")
+
+            pdf_files = list(SANDBOX_DIR.glob("*.pdf"))
+            if pdf_files:
+                checks_passed += 2
+            else:
+                issues.append("Expected formatted PDF report was not found in sandbox.")
 
         else:
             issues.append("No recognized deliverable (HTML, CSV, or MD) found in sandbox.")

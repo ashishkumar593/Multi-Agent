@@ -264,8 +264,16 @@ with tab_preview:
     sandbox_css = Path("./sandbox/styles.css")
     sandbox_csv = Path("./sandbox/leads.csv")
     sandbox_md = Path("./sandbox/article.md")
+    sandbox_pdf = Path("./sandbox/article_report.pdf")
+    sandbox_outreach = Path("./sandbox/outreach_campaign.txt")
 
-    p_tab1, p_tab2, p_tab3 = st.tabs(["🌐 Website Preview", "📊 Lead List (CSV)", "📝 SEO Article (MD)"])
+    p_tab1, p_tab2, p_tab3, p_tab4, p_tab5 = st.tabs([
+        "🌐 Website Preview",
+        "📊 Lead List (CSV)",
+        "📝 SEO Article (MD)",
+        "📄 Exported PDF Report",
+        "✉️ Cold Outreach Emails"
+    ])
 
     with p_tab1:
         if not sandbox_html.exists():
@@ -296,5 +304,21 @@ with tab_preview:
             md_text = sandbox_md.read_text(encoding="utf-8")
             st.markdown(md_text)
             st.download_button("📥 Download article.md", data=md_text, file_name="article.md", mime="text/markdown")
+
+    with p_tab4:
+        if not sandbox_pdf.exists():
+            st.info("PDF report deliverable not yet created. Runs automatically during SEO Content projects.")
+        else:
+            pdf_bytes = sandbox_pdf.read_bytes()
+            st.success(f"📄 Publication-ready PDF Report generated ({len(pdf_bytes):,} bytes).")
+            st.download_button("📥 Download article_report.pdf", data=pdf_bytes, file_name="article_report.pdf", mime="application/pdf")
+
+    with p_tab5:
+        if not sandbox_outreach.exists():
+            st.info("Cold outreach campaign sequence not yet created. Runs automatically during Lead Research projects.")
+        else:
+            outreach_text = sandbox_outreach.read_text(encoding="utf-8")
+            st.text_area("Cold Outreach Email Sequence", value=outreach_text, height=350)
+            st.download_button("📥 Download outreach_campaign.txt", data=outreach_text, file_name="outreach_campaign.txt", mime="text/plain")
 
 db.close()

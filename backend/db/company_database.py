@@ -524,8 +524,8 @@ def init_db(reset: bool = False) -> None:
             RoleSpecModel("hr", "You are HR.", json.dumps(["spawn_agent", "retire_agent", "read_registry", "read_budget"]), "fast", 5, 8000),
             RoleSpecModel("liaison", "You are the Human Liaison.", json.dumps(["post_blocker", "send_telegram", "read_blockers", "store_answer"]), "fast", 6, 8000),
             RoleSpecModel("developer", "You are the Full-Stack Developer.", json.dumps(["write_file", "run_sandbox", "read_file"]), "strong", 10, 20000),
-            RoleSpecModel("marketing", "You are Marketing.", json.dumps(["web_search", "rag_retrieve", "write_file", "read_file"]), "fast", 6, 10000),
-            RoleSpecModel("researcher", "You are Researcher.", json.dumps(["web_search", "rag_retrieve", "read_file"]), "fast", 6, 10000),
+            RoleSpecModel("marketing", "You are Marketing.", json.dumps(["web_search", "rag_retrieve", "write_file", "read_file", "export_pdf_report", "generate_email_sequence"]), "fast", 6, 10000),
+            RoleSpecModel("researcher", "You are Researcher.", json.dumps(["web_search", "rag_retrieve", "read_file", "export_pdf_report", "generate_email_sequence"]), "fast", 6, 10000),
             RoleSpecModel("reviewer", "You are Reviewer.", json.dumps(["run_tests", "read_file", "score_task"]), "strong", 6, 10000),
             RoleSpecModel("monitor", "You are Monitor daemon.", json.dumps(["read_registry", "mark_dead", "trip_kill_switch"]), "none", 1, 0),
         ]
