@@ -502,6 +502,9 @@ def get_db() -> Generator[CompanySession, None, None]:
         session.close()
 
 
+get_company_db = SessionLocal
+
+
 def init_db(reset: bool = False) -> None:
     """Initialize SQLite database and seed baseline roles, teams, and agents."""
     if reset and DEFAULT_DB_FILE.exists():

@@ -20,7 +20,7 @@ document_service = DocumentService(retriever=retriever)
 try:
     from fastapi import FastAPI
     from fastapi.middleware.cors import CORSMiddleware
-    from backend.api.routes import documents_router, health_router, reports_router, research_router
+    from backend.api.routes import company_router, documents_router, health_router, reports_router, research_router
 
     app = FastAPI(
         title=settings.app_name,
@@ -49,6 +49,8 @@ try:
         app.include_router(documents_router)
     if reports_router:
         app.include_router(reports_router)
+    if company_router:
+        app.include_router(company_router)
 
 except ImportError:
     app = None  # type: ignore

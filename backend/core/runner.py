@@ -104,6 +104,18 @@ class GenericAgentRunner:
 
         self.heartbeat(agent_id)
 
+        # Enforce Section 7 Loop Cap: Max 3 attempts per task, then escalate to blocked
+        if (task.attempts or 0) > 3:
+            blocker = self.tools.post_blocker(
+                task_id=task.id,
+                blocker_type="approval",
+                priority="high",
+                details=f"Task '{task.title}' exceeded maximum attempt cap (attempts={task.attempts}). Human review required.",
+                options=["Reset & Retry", "Reassign Task", "Mark Failed"],
+                agent_id="agent_liaison",
+            )
+            return {"status": "blocked", "blocker_id": blocker.get("blocker_id")}
+
         # Call LLM client with role system prompt and model tier
         model_name = settings.default_model if spec.model_tier == "strong" else settings.fast_model
         llm_out = self.llm.generate(
